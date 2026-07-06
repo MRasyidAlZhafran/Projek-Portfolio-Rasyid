@@ -35,3 +35,11 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     Route::put('/messages/{contact}/read', [AdminController::class, 'markMessageRead'])->name('admin.messages.read');
     Route::delete('/messages/{contact}', [AdminController::class, 'deleteMessage'])->name('admin.messages.delete');
 });
+
+// Catch-all: Sajikan React SPA untuk semua route yang bukan API
+// (Harus di paling bawah)
+Route::get('/{any}', function () {
+    return file_exists(public_path('index.html'))
+        ? response()->file(public_path('index.html'))
+        : abort(404, 'Frontend belum di-build. Jalankan: npm run build di folder frontend.');
+})->where('any', '.*')->name('spa.fallback');
