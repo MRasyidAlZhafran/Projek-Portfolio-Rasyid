@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="id"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>EP Portfolio | Digital Experience Architect</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;800&amp;family=Inter:wght@400;500&amp;family=Geist:wght@500&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Design System Configuration -->
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+                "surface-container": "#1d2021",
+                "on-tertiary-fixed-variant": "#474746",
+                "surface-container-lowest": "#0c0f10",
+                "primary-container": "#00f0ff",
+                "on-primary-fixed-variant": "#004f54",
+                "primary-fixed": "#7df4ff",
+                "on-tertiary-container": "#5f5e5e",
+                "tertiary-fixed": "#e5e2e1",
+                "error": "#ffb4ab",
+                "surface": "#111415",
+                "tertiary-container": "#dcd9d8",
+                "tertiary-fixed-dim": "#c8c6c5",
+                "surface-container-low": "#191c1d",
+                "outline-variant": "#3b494b",
+                "surface-bright": "#373a3b",
+                "on-secondary-container": "#bab8b7",
+                "on-error-container": "#ffdad6",
+                "outline": "#849495",
+                "on-primary-container": "#006970",
+                "background": "#111415",
+                "on-secondary-fixed-variant": "#474646",
+                "surface-variant": "#323536",
+                "inverse-primary": "#006970",
+                "tertiary": "#f8f5f5",
+                "secondary-fixed": "#e5e2e1",
+                "surface-container-highest": "#323536",
+                "primary-fixed-dim": "#00dbe9",
+                "on-tertiary": "#303030",
+                "surface-container-high": "#282a2b",
+                "error-container": "#93000a",
+                "primary": "#dbfcff",
+                "inverse-on-surface": "#2e3132",
+                "secondary": "#c8c6c5",
+                "on-surface-variant": "#b9cacb",
+                "on-secondary": "#313030",
+                "on-secondary-fixed": "#1c1b1b",
+                "surface-tint": "#00dbe9",
+                "on-background": "#e1e3e4",
+                "on-tertiary-fixed": "#1b1b1c",
+                "surface-dim": "#111415",
+                "on-primary-fixed": "#002022",
+                "on-error": "#690005",
+                "secondary-fixed-dim": "#c8c6c5",
+                "inverse-surface": "#e1e3e4",
+                "on-surface": "#e1e3e4",
+                "secondary-container": "#4a4949",
+                "on-primary": "#00363a"
+        },
+        "borderRadius": {
+                "DEFAULT": "0.125rem",
+                "lg": "0.25rem",
+                "xl": "0.5rem",
+                "full": "0.75rem"
+        },
+        "spacing": {
+                "section-padding": "160px",
+                "section-padding-mobile": "80px",
+                "base": "8px",
+                "gutter": "24px",
+                "container-max": "1200px"
+        },
+        "fontFamily": {
+                "display-lg-mobile": [
+                        "Hanken Grotesk"
+                ],
+                "body-lg": [
+                        "Inter"
+                ],
+                "label-mono": [
+                        "Geist"
+                ],
+                "headline-md": [
+                        "Hanken Grotesk"
+                ],
+                "body-md": [
+                        "Inter"
+                ],
+                "display-lg": [
+                        "Hanken Grotesk"
+                ]
+        },
+        "fontSize": {
+                "display-lg-mobile": [
+                        "48px",
+                        {
+                                "lineHeight": "1.1",
+                                "letterSpacing": "-0.02em",
+                                "fontWeight": "800"
+                        }
+                ],
+                "body-lg": [
+                        "20px",
+                        {
+                                "lineHeight": "1.6",
+                                "fontWeight": "400"
+                        }
+                ],
+                "label-mono": [
+                        "14px",
+                        {
+                                "lineHeight": "1.0",
+                                "letterSpacing": "0.05em",
+                                "fontWeight": "500"
+                        }
+                ],
+                "headline-md": [
+                        "40px",
+                        {
+                                "lineHeight": "1.2",
+                                "fontWeight": "600"
+                        }
+                ],
+                "body-md": [
+                        "16px",
+                        {
+                                "lineHeight": "1.6",
+                                "fontWeight": "400"
+                        }
+                ],
+                "display-lg": [
+                        "88px",
+                        {
+                                "lineHeight": "1.0",
+                                "letterSpacing": "-0.04em",
+                                "fontWeight": "800"
+                        }
+                ]
+        }
+},
+    },
+  }
+</script>
+<style>
+        body {
+            background-color: #0c0f10; /* using surface-container-lowest for a deeper dark */
+            color: #e1e3e4;
+            scroll-behavior: smooth;
+            overflow-x: hidden;
+        }
+        .glass {
+            background: rgba(25, 28, 29, 0.4); /* surface-container-low with opacity */
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .hero-glow {
+            background: radial-gradient(circle at 50% 50%, rgba(0, 240, 255, 0.15) 0%, transparent 60%);
+        }
+        .custom-bullet {
+            width: 4px;
+            height: 4px;
+            background-color: #00f0ff;
+            display: inline-block;
+            margin-right: 12px;
+            margin-bottom: 3px;
+        }
+        
+        /* Reveal Animations */
+        .reveal-up {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all 1s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .reveal-up.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .reveal-left {
+            opacity: 0;
+            transform: translateX(-40px);
+            transition: all 1s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .reveal-left.active {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .reveal-right {
+            opacity: 0;
+            transform: translateX(40px);
+            transition: all 1s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .reveal-right.active {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        /* Connected Path Animation */
+        #connection-path {
+            stroke-dasharray: 6000;
+            stroke-dashoffset: 6000;
+            transition: stroke-dashoffset 0.1s ease-out;
+        }
+    </style>
+</head>
+<body class="selection:bg-primary-container selection:text-on-primary relative">
+<!-- Ambient Background Glows -->
+<div class="fixed top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-[-2]">
+<div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary-container/10 blur-[120px] rounded-full"></div>
+<div class="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-primary-container/5 blur-[150px] rounded-full"></div>
+</div>
+<!-- Continuous Connecting Path (SVG) -->
+<div class="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full pointer-events-none z-[-1] max-w-[1400px] mx-auto overflow-hidden hidden md:block">
+<svg class="opacity-40 mix-blend-screen" fill="none" height="100%" preserveaspectratio="none" viewbox="0 0 1200 4000" width="100%" xmlns="http://www.w3.org/2000/svg">
+<!-- Soft background glow path -->
+<path d="M600,0 C900,400 100,800 200,1300 C300,1800 1100,1900 1000,2500 C900,3100 100,3400 300,4000" filter="url(#glow-blur)" stroke="url(#flow-glow)" stroke-linecap="round" stroke-width="60"></path>
+<!-- Sharp connection path -->
+<path d="M600,0 C900,400 100,800 200,1300 C300,1800 1100,1900 1000,2500 C900,3100 100,3400 300,4000" id="connection-path" stroke="#00f0ff" stroke-opacity="0.4" stroke-width="1.5"></path>
+<!-- Geometric intersection lines -->
+<path d="M600,200 L900,400 L200,900 L1000,1700 L300,2700" stroke="#00f0ff" stroke-dasharray="4 8" stroke-opacity="0.1" stroke-width="1"></path>
+<defs>
+<filter height="140%" id="glow-blur" width="140%" x="-20%" y="-20%">
+<fegaussianblur stddeviation="30"></fegaussianblur>
+</filter>
+<lineargradient gradientunits="userSpaceOnUse" id="flow-glow" x1="0" x2="0" y1="0" y2="4000">
+<stop offset="0%" stop-color="#00f0ff" stop-opacity="0"></stop>
+<stop offset="20%" stop-color="#00f0ff" stop-opacity="0.15"></stop>
+<stop offset="50%" stop-color="#00f0ff" stop-opacity="0.05"></stop>
+<stop offset="80%" stop-color="#00f0ff" stop-opacity="0.15"></stop>
+<stop offset="100%" stop-color="#00f0ff" stop-opacity="0"></stop>
+</lineargradient>
+</defs>
+</svg>
+</div>
+<!-- TopNavBar -->
+<nav class="fixed top-0 w-full z-50 bg-surface-container-lowest/70 backdrop-blur-xl border-b border-white/5 shadow-sm transition-all ease-in-out" id="hero">
+<div class="flex justify-between items-center max-w-container-max mx-auto px-gutter py-6">
+<span class="font-headline-md text-2xl font-bold text-on-surface">EP<span class="text-primary-container">.</span></span>
+<div class="hidden md:flex items-center gap-10">
+<a class="font-label-mono text-label-mono text-primary font-bold transition-opacity duration-300" href="#hero">Hero</a>
+<a class="font-label-mono text-label-mono text-on-surface/60 hover:text-on-surface transition-opacity duration-300" href="#about">About Me</a>
+<a class="font-label-mono text-label-mono text-on-surface/60 hover:text-on-surface transition-opacity duration-300" href="#skills">Skills</a>
+<a class="font-label-mono text-label-mono text-on-surface/60 hover:text-on-surface transition-opacity duration-300" href="#projects">Projects</a>
+<a class="font-label-mono text-label-mono text-on-surface/60 hover:text-on-surface transition-opacity duration-300" href="#contact">Contact</a>
+</div>
+<button class="glass text-on-surface hover:text-primary-container font-label-mono text-label-mono px-6 py-2.5 rounded-full hover:bg-white/5 transition-all duration-300 border border-white/10">
+                Resume
+            </button>
+</div>
+</nav>
+<!-- Hero Section -->
+<section class="relative min-h-[100vh] flex flex-col items-center justify-center text-center px-gutter pt-20">
+<div class="relative z-10 max-w-5xl mx-auto space-y-10 reveal-up">
+<div class="inline-block px-5 py-1.5 glass rounded-full mb-2 relative z-20 shadow-[0_0_20px_rgba(0,240,255,0.2)]">
+<span class="font-label-mono text-xs text-primary-container tracking-[0.2em] uppercase">Available for work</span>
+</div>
+<h1 class="font-display-lg-mobile md:font-display-lg text-display-lg-mobile md:text-display-lg text-on-surface leading-[1.05]">
+                Menciptakan <span class="text-primary-container italic font-light">Pengalaman</span><br/>Digital Presisi Tinggi.
+            </h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl mx-auto font-light">
+                Desainer UI/UX dan Pengembang Frontend yang fokus pada detail teknis dan estetika minimalis untuk brand global terkemuka.
+            </p>
+<div class="flex flex-col md:flex-row items-center justify-center gap-6 pt-10">
+<a class="w-full md:w-auto bg-primary-container text-on-primary font-label-mono text-label-mono px-10 py-4 rounded-full hover:scale-105 transition-transform duration-300 font-bold" href="#projects">
+                    View Projects
+                </a>
+<a class="w-full md:w-auto glass text-on-surface font-label-mono text-label-mono px-10 py-4 rounded-full hover:bg-white/5 hover:text-primary-container transition-all duration-300" href="#contact">
+                    Mulai Kerjasama
+                </a>
+</div>
+</div>
+</section>
+<!-- About Me Section -->
+<section class="py-section-padding-mobile md:py-section-padding relative" id="about">
+<div class="max-w-container-max mx-auto px-gutter">
+<div class="grid grid-cols-1 md:grid-cols-12 gap-16 md:gap-24 items-center">
+<div class="md:col-span-5 relative reveal-left md:translate-y-20">
+<div class="aspect-[4/5] rounded-3xl overflow-hidden glass p-2 transform -rotate-2 hover:rotate-0 transition-transform duration-700 relative z-20">
+<img class="w-full h-full object-cover rounded-2xl grayscale hover:grayscale-0 transition-all duration-700" data-alt="A professional studio portrait of a modern digital creative in a minimalist dark environment, wearing professional tech-noir style attire. The lighting is dramatic high-contrast side-lighting with a subtle cyan rim light to match the portfolio accent color. The background is a dark matte texture, emphasizing clean lines and a high-end editorial feel." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB-oU7hH_I3TK-IHHnTbwtveZvCvDrPJS_6wkf8llPkc70GfiVRQ-ODTAzu_bvJD3T0BgwofgYcunPO4b3_ih9QRkE338oC0kKp6OPB11phyeubRqFpSE3eUBlYujY9FHxEWWgcjm9zF7iXMSZG-5CCtmgn45I7iJkRZ7n5D9gc1-7lKDpjVC2odwtJ7e-xhIWYB-gdtKRoBvdi-MgbTRQkNjZ8BM4QfUdskmAls_bus4nXLlh1i_PQNSA8IWK_-yXdSRE4U1KNY-Uy"/>
+</div>
+<div class="absolute -bottom-10 -left-10 w-40 h-40 border border-primary-container/30 rounded-full blur-[1px] -z-10"></div>
+</div>
+<div class="md:col-span-7 space-y-10 reveal-right pb-16 md:pb-24">
+<div class="space-y-4">
+<span class="font-label-mono text-label-mono text-primary-container uppercase tracking-widest flex items-center gap-4"><span class="w-8 h-[1px] bg-primary-container"></span> Tentang Saya</span>
+<h2 class="font-headline-md text-headline-md text-on-surface leading-tight">Membangun Jembatan Antara Imajinasi dan Implementasi.</h2>
+</div>
+<div class="font-body-lg text-body-lg text-on-surface-variant space-y-6 font-light">
+<p>
+                            Halo, saya seorang desainer yang berbasis di Jakarta dengan semangat untuk kesederhanaan visual dan keunggulan teknis. Saya percaya bahwa desain terbaik bukan hanya tentang penampilan, tetapi bagaimana ia berfungsi di tangan pengguna.
+                        </p>
+<p>
+                            Selama 5 tahun terakhir, saya telah membantu startup dan perusahaan mapan dalam mendefinisikan identitas digital mereka melalui antarmuka yang bersih, intuitif, dan performa tinggi.
+                        </p>
+</div>
+<div class="grid grid-cols-2 gap-8 pt-8 border-t border-white/5">
+<div>
+<p class="font-display-lg-mobile text-4xl text-on-surface font-light">50<span class="text-primary-container">+</span></p>
+<p class="font-label-mono text-xs text-on-surface-variant mt-2 uppercase tracking-wider">Projek Selesai</p>
+</div>
+<div>
+<p class="font-display-lg-mobile text-4xl text-on-surface font-light">12</p>
+<p class="font-label-mono text-xs text-on-surface-variant mt-2 uppercase tracking-wider">Penghargaan Desain</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Skills Section -->
+<section class="pb-section-padding-mobile md:pb-section-padding relative" id="skills">
+<div class="max-w-container-max mx-auto px-gutter relative z-20 md:-mt-24">
+<div class="mb-16 reveal-up text-center md:text-left">
+<span class="font-label-mono text-label-mono text-primary-container uppercase tracking-widest flex items-center justify-center md:justify-start gap-4"><span class="w-8 h-[1px] bg-primary-container"></span> Keahlian</span>
+<h2 class="font-headline-md text-headline-md text-on-surface mt-6 md:w-1/2">Peralatan &amp; Kemampuan</h2>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12 relative">
+<!-- UI/UX Card -->
+<div class="glass p-12 rounded-3xl group hover:border-primary-container/30 transition-all duration-500 reveal-up md:translate-y-12">
+<span class="material-symbols-outlined text-primary-container text-5xl mb-8 block font-light" data-weight="fill">design_services</span>
+<h3 class="font-headline-md text-2xl text-on-surface mb-4">UI/UX Design</h3>
+<p class="font-body-md text-body-md text-on-surface-variant mb-8 font-light">Menciptakan alur pengguna yang mulus dan antarmuka visual yang memukau dengan fokus pada kegunaan.</p>
+<ul class="space-y-4 font-label-mono text-sm text-on-surface-variant/80">
+<li class="flex items-center"><span class="custom-bullet"></span>Figma &amp; Adobe XD</li>
+<li class="flex items-center"><span class="custom-bullet"></span>Wireframing &amp; Prototyping</li>
+<li class="flex items-center"><span class="custom-bullet"></span>User Research</li>
+<li class="flex items-center"><span class="custom-bullet"></span>Design Systems</li>
+</ul>
+</div>
+<!-- Frontend Card -->
+<div class="glass p-12 rounded-3xl group hover:border-primary-container/30 transition-all duration-500 reveal-up md:-translate-y-4 shadow-[0_20px_40px_rgba(0,0,0,0.5)]">
+<span class="material-symbols-outlined text-primary-container text-5xl mb-8 block font-light" data-weight="fill">code</span>
+<h3 class="font-headline-md text-2xl text-on-surface mb-4">Frontend Dev</h3>
+<p class="font-body-md text-body-md text-on-surface-variant mb-8 font-light">Menerjemahkan desain pixel-perfect ke dalam kode yang bersih, responsif, dan performa tinggi.</p>
+<ul class="space-y-4 font-label-mono text-sm text-on-surface-variant/80">
+<li class="flex items-center"><span class="custom-bullet"></span>React.js &amp; Next.js</li>
+<li class="flex items-center"><span class="custom-bullet"></span>Tailwind CSS</li>
+<li class="flex items-center"><span class="custom-bullet"></span>JavaScript (ES6+)</li>
+<li class="flex items-center"><span class="custom-bullet"></span>Web Performance</li>
+</ul>
+</div>
+<!-- Strategy Card -->
+<div class="glass p-12 rounded-3xl group hover:border-primary-container/30 transition-all duration-500 reveal-up md:translate-y-24">
+<span class="material-symbols-outlined text-primary-container text-5xl mb-8 block font-light" data-weight="fill">hub</span>
+<h3 class="font-headline-md text-2xl text-on-surface mb-4">Project Mgmt</h3>
+<p class="font-body-md text-body-md text-on-surface-variant mb-8 font-light">Memastikan setiap proyek berjalan tepat waktu dengan koordinasi tim yang efektif dan strategis.</p>
+<ul class="space-y-4 font-label-mono text-sm text-on-surface-variant/80">
+<li class="flex items-center"><span class="custom-bullet"></span>Agile Methodology</li>
+<li class="flex items-center"><span class="custom-bullet"></span>Product Strategy</li>
+<li class="flex items-center"><span class="custom-bullet"></span>Stakeholder Management</li>
+<li class="flex items-center"><span class="custom-bullet"></span>Technical SEO</li>
+</ul>
+</div>
+</div>
+</div>
+</section>
+<!-- Projects Section -->
+<section class="py-section-padding-mobile md:py-section-padding relative" id="projects">
+<div class="max-w-container-max mx-auto px-gutter">
+<div class="flex flex-col md:flex-row justify-between items-end mb-24 gap-6 reveal-up relative z-20 md:-mt-12">
+<div>
+<span class="font-label-mono text-label-mono text-primary-container uppercase tracking-widest flex items-center gap-4"><span class="w-8 h-[1px] bg-primary-container"></span> Projek</span>
+<h2 class="font-headline-md text-headline-md text-on-surface mt-6">Karya Pilihan Terkini</h2>
+</div>
+<div class="font-label-mono text-label-mono text-on-surface-variant hover:text-primary-container cursor-pointer transition-colors border-b border-white/20 hover:border-primary-container pb-2 flex items-center gap-2">
+                    Lihat Semua Projek <span class="material-symbols-outlined text-sm">arrow_outward</span>
+</div>
+</div>
+<!-- Asymmetric Grid for Projects -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-16 md:gap-24 pb-16 md:pb-24">
+<!-- Project 1 -->
+<div class="md:col-span-8 group relative space-y-8 reveal-up z-20">
+<div class="aspect-[16/10] overflow-hidden rounded-3xl bg-surface-container-low relative shadow-[0_30px_60px_rgba(0,0,0,0.5)] border border-white/5">
+<img class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105 opacity-80 group-hover:opacity-100" data-alt="A sleek, high-fidelity user interface for a premium fintech application displayed on a minimalist smartphone mockup." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD3M8ttCX2me1CZc370kXYrxuFkAy3TpGFcJXf_91xFnpsMFKu0pwHHk5_Mqey2iDpSJq1qEEu5kzlF0ZtwL92yoXhPiaNcMbLeV7ASG0QfEYh-nW2faQNkJkaUyVA_WhiTTXoQIfUjbqn8smv6vWPvnZZ6vof9GpjFYBA6l02nFJ68XWajtWWskVKXnkKUBwxw_Z-8qg6m7SajMzpI5NSKKM_u3KDMMR4rapQHp_d_GETmYW9tG69gGSmAWGu5BBuRgxngzA6Lq5dX"/>
+</div>
+<div class="space-y-4 md:w-3/4">
+<div class="flex gap-4">
+<span class="font-label-mono text-[11px] tracking-widest uppercase text-primary-container">FINTECH</span>
+<span class="font-label-mono text-[11px] tracking-widest uppercase text-on-surface-variant/50">MOBILE APP</span>
+</div>
+<h3 class="font-headline-md text-3xl text-on-surface group-hover:text-primary-container transition-colors">NeoVault: Digital Wealth</h3>
+<p class="font-body-md text-body-md text-on-surface-variant font-light">Revolusi manajemen aset digital dengan antarmuka yang sangat responsif dan aman.</p>
+</div>
+</div>
+<!-- Project 2 -->
+<div class="md:col-span-4 group relative space-y-8 md:mt-64 reveal-up z-10">
+<div class="aspect-[4/5] overflow-hidden rounded-3xl bg-surface-container-low relative border border-white/5">
+<img class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105 opacity-80 group-hover:opacity-100" data-alt="A sophisticated e-commerce website design for a high-end architectural furniture brand." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCdeA1sA4JbwGrDTCq8vdkUNN77jLRCEtZoPRw5fSZXKitto9mWFyCPQEo2KxFm0mmkRTuyFpkDghE4hiXl6jb9cy-sU2gJqZitJuu2eS2TXdeFlKZaTXvcdMIsYhai7EIcMuaKBymE71Xi0FWe_RVfc6-9HUPsD6-1SvhGvGcti8pK58qR31vu88sUmkyZm60cK1sQQu3nWmVN_8kCaAFAqVBahf6grtqtRl3EQ2BfB9OdGLZxWxbqcXYwYoncO8YAWajD7XmGHB_F"/>
+</div>
+<div class="space-y-4">
+<div class="flex gap-4">
+<span class="font-label-mono text-[11px] tracking-widest uppercase text-primary-container">E-COMMERCE</span>
+</div>
+<h3 class="font-headline-md text-2xl text-on-surface group-hover:text-primary-container transition-colors">Lumina</h3>
+<p class="font-body-md text-body-md text-on-surface-variant font-light">Pengalaman belanja premium dengan kurasi visual.</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Contact Section (Hubungi) -->
+<section class="pb-section-padding-mobile md:pb-section-padding pt-12 md:pt-0 relative" id="contact">
+<!-- Background element -->
+<div class="absolute inset-0 hero-glow -z-10 opacity-50"></div>
+<div class="max-w-container-max mx-auto px-gutter relative z-20 md:-mt-24">
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
+<div class="space-y-10 reveal-left">
+<div>
+<span class="font-label-mono text-label-mono text-primary-container uppercase tracking-widest flex items-center gap-4"><span class="w-8 h-[1px] bg-primary-container"></span> Hubungi</span>
+<h2 class="font-display-lg-mobile text-5xl text-on-surface mt-6 leading-tight">Mari Bangun Sesuatu yang Luar Biasa.</h2>
+</div>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-md font-light">
+                        Punya proyek menarik di benak Anda? Atau sekadar ingin menyapa? Kotak masuk saya selalu terbuka untuk kolaborasi baru.
+                    </p>
+<div class="space-y-8 pt-4">
+<div class="flex items-center gap-6">
+<div class="w-14 h-14 rounded-full border border-white/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary-container font-light">mail</span>
+</div>
+<div>
+<p class="font-label-mono text-xs text-on-surface-variant/60 uppercase tracking-widest mb-1">Email me at</p>
+<p class="font-body-lg text-lg text-on-surface">hello@etherealprecision.id</p>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<div class="w-14 h-14 rounded-full border border-white/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary-container font-light">location_on</span>
+</div>
+<div>
+<p class="font-label-mono text-xs text-on-surface-variant/60 uppercase tracking-widest mb-1">Located in</p>
+<p class="font-body-lg text-lg text-on-surface">Jakarta, Indonesia</p>
+</div>
+</div>
+</div>
+</div>
+<div class="glass p-8 md:p-14 rounded-3xl relative reveal-right shadow-[0_20px_60px_rgba(0,0,0,0.6)]">
+<form class="space-y-8">
+<div class="grid grid-cols-1 gap-8">
+<div class="space-y-3">
+<label class="font-label-mono text-label-mono text-on-surface-variant uppercase text-[10px] tracking-widest" for="name">Nama Lengkap</label>
+<input class="w-full bg-transparent border-b border-white/10 px-0 py-3 text-on-surface focus:outline-none focus:border-primary-container transition-colors font-body-md text-body-md placeholder-on-surface-variant/30" id="name" placeholder="John Doe" type="text"/>
+</div>
+<div class="space-y-3">
+<label class="font-label-mono text-label-mono text-on-surface-variant uppercase text-[10px] tracking-widest" for="email">Email</label>
+<input class="w-full bg-transparent border-b border-white/10 px-0 py-3 text-on-surface focus:outline-none focus:border-primary-container transition-colors font-body-md text-body-md placeholder-on-surface-variant/30" id="email" placeholder="john@example.com" type="email"/>
+</div>
+<div class="space-y-3">
+<label class="font-label-mono text-label-mono text-on-surface-variant uppercase text-[10px] tracking-widest" for="message">Pesan Anda</label>
+<textarea class="w-full bg-transparent border-b border-white/10 px-0 py-3 text-on-surface focus:outline-none focus:border-primary-container transition-colors font-body-md text-body-md placeholder-on-surface-variant/30 resize-none" id="message" placeholder="Beri tahu saya tentang projek Anda..." rows="4"></textarea>
+</div>
+</div>
+<button class="w-full bg-primary-container text-on-primary font-label-mono text-label-mono py-5 rounded-full hover:brightness-110 hover:scale-[1.02] transition-all duration-300 font-bold tracking-widest uppercase mt-4 shadow-[0_0_20px_rgba(0,240,255,0.3)]" type="submit">
+                            Kirim Pesan
+                        </button>
+</form>
+</div>
+</div>
+</div>
+</section>
+<!-- Footer -->
+<footer class="bg-surface-container-lowest border-t border-white/5 py-12">
+<div class="flex flex-col md:flex-row justify-between items-center max-w-container-max mx-auto px-gutter gap-8">
+<div class="space-y-2 text-center md:text-left">
+<span class="font-headline-md text-xl font-bold text-on-surface">EP<span class="text-primary-container">.</span></span>
+<p class="font-label-mono text-xs text-on-surface-variant/60 uppercase tracking-wider">© 2024 Ethereal Precision. All rights reserved.</p>
+</div>
+<div class="flex gap-8">
+<a class="font-label-mono text-sm text-on-surface-variant hover:text-primary-container transition-colors duration-200" href="#">LinkedIn</a>
+<a class="font-label-mono text-sm text-on-surface-variant hover:text-primary-container transition-colors duration-200" href="#">GitHub</a>
+<a class="font-label-mono text-sm text-on-surface-variant hover:text-primary-container transition-colors duration-200" href="#">Dribbble</a>
+</div>
+</div>
+</footer>
+<!-- Interactive Scripts -->
+<script>
+        // Smooth Scrolling
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // Scroll Reveals
+        const revealOptions = {
+            threshold: 0.15,
+            rootMargin: "0px 0px -50px 0px"
+        };
+
+        const revealOnScroll = new IntersectionObserver(function(entries, observer) {
+            entries.forEach(entry => {
+                if (!entry.isIntersecting) {
+                    return;
+                }
+                entry.target.classList.add('active');
+                observer.unobserve(entry.target);
+            });
+        }, revealOptions);
+
+        document.querySelectorAll('.reveal-up, .reveal-left, .reveal-right').forEach(el => {
+            revealOnScroll.observe(el);
+        });
+
+        // Connected Path Drawing Animation
+        window.addEventListener('scroll', () => {
+            const path = document.getElementById('connection-path');
+            if(path) {
+                const scrollPercentage = (document.documentElement.scrollTop + document.body.scrollTop) / (document.documentElement.scrollHeight - document.documentElement.clientHeight);
+                const drawLength = 6000 * scrollPercentage; // matched with stroke-dasharray
+                path.style.strokeDashoffset = 6000 - drawLength;
+            }
+        });
+    </script>
+</body></html>
