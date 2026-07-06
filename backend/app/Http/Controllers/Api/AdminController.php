@@ -77,7 +77,6 @@ class AdminController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'level' => 'required|integer|min:1|max:100',
             'category' => 'required|string|max:255',
         ]);
 
@@ -89,7 +88,6 @@ class AdminController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'level' => 'required|integer|min:1|max:100',
             'category' => 'required|string|max:255',
         ]);
 
