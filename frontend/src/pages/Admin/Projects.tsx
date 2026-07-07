@@ -1,10 +1,16 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import api from '../../services/api';
-import { Plus, Edit2, Trash2, Link } from 'lucide-react';
+import { Plus, Edit2, Trash2, Link as LinkIcon, X } from 'lucide-react';
+
+const emptyForm = { title: '', description: '', tech_stack: '', github_url: '', demo_url: '', image: null as File | null };
 
 const Projects = () => {
     const [projects, setProjects] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [editingProject, setEditingProject] = useState<any>(null);
+    const [form, setForm] = useState(emptyForm);
+    const [isSaving, setIsSaving] = useState(false);
 
     const fetchProjects = async () => {
         try {
@@ -17,12 +23,55 @@ const Projects = () => {
         }
     };
 
-    useEffect(() => {
-        fetchProjects();
-    }, []);
+    useEffect(() => { fetchProjects(); }, []);
+
+    const openAdd = () => {
+        setEditingProject(null);
+        setForm(emptyForm);
+        setIsModalOpen(true);
+    };
+
+    const openEdit = (p: any) => {
+        setEditingProject(p);
+        setForm({ title: p.title, description: p.description, tech_stack: p.tech_stack, github_url: p.github_url || '', demo_url: p.demo_url || '', image: null });
+        setIsModalOpen(true);
+    };
+
+    const closeModal = () => {
+        setIsModalOpen(false);
+        setEditingProject(null);
+        setForm(emptyForm);
+    };
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setIsSaving(true);
+        try {
+            const data = new FormData();
+            data.append('title', form.title);
+            data.append('description', form.description);
+            data.append('tech_stack', form.tech_stack);
+            data.append('github_url', form.github_url);
+            data.append('demo_url', form.demo_url);
+            if (form.image) data.append('image', form.image);
+
+            if (editingProject) {
+                data.append('_method', 'PUT');
+                await api.post(`/admin/projects/${editingProject.id}`, data, { headers: { 'Content-Type': 'multipart/form-data' } });
+            } else {
+                await api.post('/admin/projects', data, { headers: { 'Content-Type': 'multipart/form-data' } });
+            }
+            closeModal();
+            fetchProjects();
+        } catch (e) {
+            console.error(e);
+        } finally {
+            setIsSaving(false);
+        }
+    };
 
     const handleDelete = async (id: number) => {
-        if (!confirm('Are you sure you want to delete this project?')) return;
+        if (!confirm('Yakin ingin menghapus project ini?')) return;
         try {
             await api.delete(`/admin/projects/${id}`);
             fetchProjects();
@@ -33,17 +82,57 @@ const Projects = () => {
 
     return (
         <div>
-            <div className="flex justify-between items-center mb-8">
+            <div className="flex justify-between items-center mb-6">
                 <div>
-                    <h1 className="text-3xl font-bold text-slate-800 tracking-tight">Projects</h1>
-                    <p className="text-slate-500 mt-1">Kelola data portofolio.</p>
+                    <h1 className="text-2xl md:text-3xl font-bold text-slate-800 tracking-tight">Projects</h1>
+                    <p className="text-slate-500 mt-1 text-sm">Kelola data portofolio.</p>
                 </div>
-                <button className="bg-[#0a84ff] hover:bg-blue-600 text-white font-medium px-5 py-2.5 rounded-xl shadow-[0_8px_15px_-5px_rgba(10,132,255,0.4)] transition-all flex items-center gap-2">
-                    <Plus size={18} /> Tambah Project
+                <button
+                    onClick={openAdd}
+                    className="bg-[#0a84ff] hover:bg-blue-600 text-white font-medium px-4 py-2.5 rounded-xl shadow-[0_8px_15px_-5px_rgba(10,132,255,0.4)] transition-all flex items-center gap-2 text-sm"
+                >
+                    <Plus size={16} /> Tambah Project
                 </button>
             </div>
 
-            <div className="bg-white rounded-3xl border border-slate-100 shadow-[0_15px_30px_-10px_rgba(0,0,0,0.03)] overflow-hidden">
+            {/* Mobile Card View */}
+            <div className="md:hidden space-y-3">
+                {isLoading ? (
+                    <div className="p-8 text-center text-slate-500 bg-white rounded-2xl">Loading...</div>
+                ) : projects.length === 0 ? (
+                    <div className="p-8 text-center text-slate-500 bg-white rounded-2xl">Belum ada project.</div>
+                ) : (
+                    projects.map((p: any) => (
+                        <div key={p.id} className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4">
+                            <div className="flex items-start gap-3 mb-3">
+                                {p.image ? (
+                                    <img src={`${import.meta.env.VITE_STORAGE_URL || ''}/storage/${p.image}`} alt={p.title} className="w-12 h-12 rounded-xl object-cover flex-shrink-0" />
+                                ) : (
+                                    <div className="w-12 h-12 bg-slate-100 rounded-xl flex-shrink-0" />
+                                )}
+                                <div className="flex-1 min-w-0">
+                                    <div className="font-bold text-slate-800 text-sm">{p.title}</div>
+                                    <div className="text-xs text-slate-500 mt-0.5 line-clamp-2">{p.description}</div>
+                                </div>
+                            </div>
+                            <div className="flex items-center justify-between">
+                                <span className="inline-block bg-blue-50 text-blue-600 text-xs font-semibold px-2 py-0.5 rounded-md border border-blue-100">{p.tech_stack}</span>
+                                <div className="flex items-center gap-2">
+                                    <button onClick={() => openEdit(p)} className="w-8 h-8 rounded-lg bg-slate-100 text-slate-600 flex items-center justify-center hover:bg-blue-100 hover:text-blue-600 transition-colors">
+                                        <Edit2 size={14} />
+                                    </button>
+                                    <button onClick={() => handleDelete(p.id)} className="w-8 h-8 rounded-lg bg-slate-100 text-slate-600 flex items-center justify-center hover:bg-red-100 hover:text-red-600 transition-colors">
+                                        <Trash2 size={14} />
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    ))
+                )}
+            </div>
+
+            {/* Desktop Table View */}
+            <div className="hidden md:block bg-white rounded-3xl border border-slate-100 shadow-[0_15px_30px_-10px_rgba(0,0,0,0.03)] overflow-hidden">
                 <table className="w-full text-left border-collapse">
                     <thead>
                         <tr className="bg-slate-50/50 border-b border-slate-100">
@@ -64,9 +153,9 @@ const Projects = () => {
                                     <td className="p-5">
                                         <div className="flex items-center gap-4">
                                             {p.image ? (
-                                                <img src={`http://localhost:8000/storage/${p.image}`} alt={p.title} className="w-12 h-12 rounded-xl object-cover" />
+                                                <img src={`${import.meta.env.VITE_STORAGE_URL || 'http://localhost:8000'}/storage/${p.image}`} alt={p.title} className="w-12 h-12 rounded-xl object-cover" />
                                             ) : (
-                                                <div className="w-12 h-12 bg-slate-100 rounded-xl"></div>
+                                                <div className="w-12 h-12 bg-slate-100 rounded-xl" />
                                             )}
                                             <div>
                                                 <div className="font-bold text-slate-800">{p.title}</div>
@@ -79,13 +168,13 @@ const Projects = () => {
                                     </td>
                                     <td className="p-5">
                                         <div className="flex items-center gap-3">
-                                            {p.github_url && <a href={p.github_url} target="_blank" className="text-slate-400 hover:text-slate-700 transition-colors"><Link size={16} /></a>}
-                                            {p.demo_url && <a href={p.demo_url} target="_blank" className="text-slate-400 hover:text-blue-500 transition-colors"><Link size={16} /></a>}
+                                            {p.github_url && <a href={p.github_url} target="_blank" rel="noreferrer" className="text-slate-400 hover:text-slate-700 transition-colors"><LinkIcon size={16} /></a>}
+                                            {p.demo_url && <a href={p.demo_url} target="_blank" rel="noreferrer" className="text-slate-400 hover:text-blue-500 transition-colors"><LinkIcon size={16} /></a>}
                                         </div>
                                     </td>
                                     <td className="p-5">
                                         <div className="flex items-center gap-2">
-                                            <button className="w-8 h-8 rounded-lg bg-slate-100 text-slate-600 flex items-center justify-center hover:bg-blue-100 hover:text-blue-600 transition-colors">
+                                            <button onClick={() => openEdit(p)} className="w-8 h-8 rounded-lg bg-slate-100 text-slate-600 flex items-center justify-center hover:bg-blue-100 hover:text-blue-600 transition-colors">
                                                 <Edit2 size={14} />
                                             </button>
                                             <button onClick={() => handleDelete(p.id)} className="w-8 h-8 rounded-lg bg-slate-100 text-slate-600 flex items-center justify-center hover:bg-red-100 hover:text-red-600 transition-colors">
@@ -99,6 +188,94 @@ const Projects = () => {
                     </tbody>
                 </table>
             </div>
+
+            {/* Modal Form */}
+            {isModalOpen && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
+                    <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
+                        <div className="flex items-center justify-between p-6 border-b border-slate-100 sticky top-0 bg-white rounded-t-2xl">
+                            <h2 className="text-lg font-bold text-slate-800">{editingProject ? 'Edit Project' : 'Tambah Project Baru'}</h2>
+                            <button onClick={closeModal} className="w-8 h-8 rounded-lg bg-slate-100 text-slate-500 flex items-center justify-center hover:bg-slate-200">
+                                <X size={16} />
+                            </button>
+                        </div>
+                        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700 mb-1.5">Judul Project</label>
+                                <input
+                                    type="text"
+                                    value={form.title}
+                                    onChange={e => setForm({ ...form, title: e.target.value })}
+                                    required
+                                    placeholder="cth. Website Portofolio"
+                                    className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700 mb-1.5">Deskripsi</label>
+                                <textarea
+                                    value={form.description}
+                                    onChange={e => setForm({ ...form, description: e.target.value })}
+                                    required
+                                    rows={3}
+                                    placeholder="Jelaskan tentang project ini..."
+                                    className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition resize-none"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700 mb-1.5">Tech Stack</label>
+                                <input
+                                    type="text"
+                                    value={form.tech_stack}
+                                    onChange={e => setForm({ ...form, tech_stack: e.target.value })}
+                                    required
+                                    placeholder="cth. React, Laravel, Tailwind CSS"
+                                    className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition"
+                                />
+                            </div>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-slate-700 mb-1.5">GitHub URL</label>
+                                    <input
+                                        type="url"
+                                        value={form.github_url}
+                                        onChange={e => setForm({ ...form, github_url: e.target.value })}
+                                        placeholder="https://github.com/..."
+                                        className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-slate-700 mb-1.5">Demo URL</label>
+                                    <input
+                                        type="url"
+                                        value={form.demo_url}
+                                        onChange={e => setForm({ ...form, demo_url: e.target.value })}
+                                        placeholder="https://..."
+                                        className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition"
+                                    />
+                                </div>
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700 mb-1.5">Gambar {editingProject && <span className="text-slate-400 font-normal">(kosongkan jika tidak diganti)</span>}</label>
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={e => setForm({ ...form, image: e.target.files?.[0] || null })}
+                                    className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-500 file:mr-3 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-medium file:bg-blue-50 file:text-blue-600 hover:file:bg-blue-100 transition"
+                                />
+                            </div>
+                            <div className="flex gap-3 pt-2">
+                                <button type="button" onClick={closeModal} className="flex-1 border border-slate-200 text-slate-600 font-medium px-4 py-2.5 rounded-xl hover:bg-slate-50 transition text-sm">
+                                    Batal
+                                </button>
+                                <button type="submit" disabled={isSaving} className="flex-1 bg-[#0a84ff] hover:bg-blue-600 text-white font-medium px-4 py-2.5 rounded-xl transition text-sm disabled:opacity-60">
+                                    {isSaving ? 'Menyimpan...' : (editingProject ? 'Simpan Perubahan' : 'Tambah Project')}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

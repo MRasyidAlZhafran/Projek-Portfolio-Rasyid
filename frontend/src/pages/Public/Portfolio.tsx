@@ -54,7 +54,14 @@ const MorphingCursor = () => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const ringRef = useRef<HTMLDivElement>(null);
 
+    const [isTouchDevice, setIsTouchDevice] = useState(false);
+
     useEffect(() => {
+        setIsTouchDevice('ontouchstart' in window || navigator.maxTouchPoints > 0);
+    }, []);
+
+    useEffect(() => {
+        if (isTouchDevice) return;
         const canvas = canvasRef.current;
         const ring = ringRef.current;
         if (!canvas) return;
@@ -639,7 +646,9 @@ const MorphingCursor = () => {
             window.removeEventListener('scroll', handleScroll, true);
             cancelAnimationFrame(rafId);
         };
-    }, []);
+    }, [isTouchDevice]);
+
+    if (isTouchDevice) return null;
 
     return (
         <>
@@ -726,7 +735,7 @@ const KaryaNodes = () => {
     const [projectsData, setProjectsData] = useState<any[]>([]);
 
     useEffect(() => {
-        fetch('http://localhost:8000/api/projects')
+        fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:8000/api'}/projects`)
             .then(res => res.json())
             .then(data => setProjectsData(data))
             .catch(err => console.error(err));
@@ -777,8 +786,9 @@ const KaryaNodes = () => {
     };
 
     // Konstanta Jarak
-    const ITEM_GAP = 150; // Jarak dasar antar kartu
-    const PUSH_FORCE = 90; // Gaya tolak saat kartu berada di tengah (membuat jarak aktif jadi 240)
+    const isMobile = window.innerWidth < 768;
+    const ITEM_GAP = isMobile ? 100 : 150; // Jarak dasar antar kartu
+    const PUSH_FORCE = isMobile ? 60 : 90; // Gaya tolak saat kartu berada di tengah
 
     // Derived active index untuk indikator bawah
     const activeIndex = Math.max(0, Math.min(projectsData.length - 1, Math.round(-scrollPos / ITEM_GAP)));
@@ -818,7 +828,7 @@ const KaryaNodes = () => {
                 {/* Gestur Seret pada Container Utama */}
                 <motion.div
                     drag="x"
-                    dragElastic={0.1} // Lebih kaku agar tidak bablas terlalu jauh
+                    dragElastic={isMobile ? 0.3 : 0.1} // Lebih kaku agar tidak bablas terlalu jauh, tapi agak longgar di HP
                     dragConstraints={{ left: -(Math.max(0, projectsData.length - 1)) * ITEM_GAP, right: 0 }}
                     onDragStart={() => {
                         isDraggingRef.current = true;
@@ -827,7 +837,7 @@ const KaryaNodes = () => {
                     }}
                     onDragEnd={(_e, info) => {
                         // Fitur Auto-Snap ke kartu terdekat saat dilepas
-                        const targetX = dragX.get() + info.velocity.x * 0.2; // Prediksi momentum
+                        const targetX = dragX.get() + info.velocity.x * (isMobile ? 0.1 : 0.2); // Prediksi momentum
                         let closestIndex = Math.round(-targetX / ITEM_GAP);
                         closestIndex = Math.max(0, Math.min(projectsData.length - 1, closestIndex));
 
@@ -947,7 +957,7 @@ const KaryaNodes = () => {
                                     >
                                         <motion.img
                                             layout
-                                            src={project.image}
+                                            src={`/storage/${project.image}`}
                                             alt={project.title}
                                             animate={{ x: (visualX / 10) * -1 }} // Efek Parallax halus
                                             transition={{ type: "spring", stiffness: 300, damping: 30 }}
@@ -1056,7 +1066,7 @@ const KaryaNodes = () => {
                         >
                             <motion.img
                                 layout
-                                src={selectedProject.image}
+                                src={`/storage/${selectedProject.image}`}
                                 alt={selectedProject.title}
                                 className="absolute inset-0 w-full h-full object-cover"
                             />
@@ -1142,6 +1152,8 @@ const MagneticNavItem = ({ item, isActive, isHovered, onClick, index }: any) => 
     }, [isHovered]);
 
     const handleMouseMove = (e: React.MouseEvent) => {
+        const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+        if (isTouch) return;
         if (!ref.current) return;
         const rect = ref.current.getBoundingClientRect();
         const cx = rect.left + rect.width / 2;
@@ -1169,7 +1181,7 @@ const MagneticNavItem = ({ item, isActive, isHovered, onClick, index }: any) => 
             animate={{ opacity: 1, y: 0, scale: 1 }}
             transition={{ delay: 0.5 + index * 0.1, type: 'spring', bounce: 0.6 }}
             whileTap={{ scale: 0.85 }}
-            className={`relative px-5 md:px-7 py-3 rounded-full transition-colors duration-300 flex items-center justify-center cursor-pointer ${isHovered ? 'text-white' : isActive ? 'text-[#0a84ff]' : 'text-slate-500'}`}
+            className={`relative px-3 md:px-7 py-2 md:py-3 rounded-full transition-colors duration-300 flex items-center justify-center cursor-pointer ${isHovered ? 'text-white' : isActive ? 'text-[#0a84ff]' : 'text-slate-500'}`}
             data-cursor-snap="true"
         >
             {isActive && (
@@ -1185,7 +1197,7 @@ const MagneticNavItem = ({ item, isActive, isHovered, onClick, index }: any) => 
             <motion.span
                 animate={{ x: pos.x, y: pos.y }}
                 transition={{ type: "spring", stiffness: 400, damping: 10, mass: 0.5 }}
-                className="relative z-10 font-bold tracking-wide"
+                className="relative z-10 font-bold tracking-wide text-xs md:text-sm"
             >
                 {item.label}
             </motion.span>
@@ -1242,6 +1254,9 @@ const Navbar = () => {
     }, []);
 
     useEffect(() => {
+        const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+        if (isTouch) return;
+
         const handleGlobalMouseMove = (e: MouseEvent) => {
             if (!navRef.current) return;
             const navWidth = navRef.current.offsetWidth || 380;
@@ -1296,7 +1311,7 @@ const Navbar = () => {
         ? { y: [0, -10, 5, -3, 0], opacity: 1, x: `calc(-50% + ${navMagnetic.x}px)`, rotate: navMagnetic.r }
         : { y: 0, opacity: 1, x: `calc(-50% + ${navMagnetic.x}px)`, rotate: navMagnetic.r };
 
-    const navTrans = isJiggling
+    const navTrans: any = isJiggling
         ? { duration: 0.4 }
         : { type: 'spring', stiffness: 200, damping: 22, mass: 0.5 };
 
@@ -1311,7 +1326,7 @@ const Navbar = () => {
             >
                 {/* Render dummy invisible items to maintain exact dimensions */}
                 {navItems.map((item, index) => (
-                    <div key={index} className="px-5 md:px-7 py-3 opacity-0 font-bold tracking-wide">
+                    <div key={index} className="px-3 md:px-7 py-2 md:py-3 opacity-0 font-bold tracking-wide text-xs md:text-sm">
                         {item.label}
                     </div>
                 ))}
@@ -1491,7 +1506,7 @@ const PremiumHoverRow = ({ skill, index }: { skill: { name: string, tools: strin
                             x: { type: 'spring', stiffness: 300, damping: 30, mass: 0.5 },
                             y: { type: 'spring', stiffness: 300, damping: 30, mass: 0.5 }
                         }}
-                        className="absolute top-0 left-0 w-[150px] h-[150px] bg-white/10 backdrop-blur-xl rounded-3xl border border-white/50 shadow-[0_20px_40px_rgba(0,0,0,0.2)] flex items-center justify-center pointer-events-none z-20"
+                        className="absolute top-0 left-0 w-[150px] h-[150px] bg-white/10 backdrop-blur-xl rounded-3xl border border-white/50 shadow-[0_20px_40px_rgba(0,0,0,0.2)] hidden md:flex items-center justify-center pointer-events-none z-20"
                         style={{ willChange: 'transform' }}
                     >
                         <span className="text-white text-5xl font-display font-black tracking-tighter drop-shadow-lg">
@@ -1533,7 +1548,9 @@ const OrbitButton = ({ onClick }: { onClick: () => void }) => {
             ((window as any).cursorRecoverDelay && (window as any).cursorRecoverDelay > 0) ||
             ((window as any).blockSnapElement === buttonRef.current);
 
-        if (dist <= 40 && !isBlocked) {
+        const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+
+        if (dist <= 40 && !isBlocked && !isTouch) {
             if (!isPossessed.current) {
                 isPossessed.current = true;
                 setHoverState(true);
@@ -1576,8 +1593,9 @@ const OrbitButton = ({ onClick }: { onClick: () => void }) => {
                 return;
             }
             timeRef.current += delta * 0.0015;
-            const radiusX = 250;
-            const radiusY = 70;
+            const isMobile = window.innerWidth < 768;
+            const radiusX = isMobile ? 120 : 250;
+            const radiusY = isMobile ? 40 : 70;
 
             const sinVal = Math.sin(timeRef.current);
             const targetX = Math.cos(timeRef.current) * radiusX;
@@ -1594,6 +1612,8 @@ const OrbitButton = ({ onClick }: { onClick: () => void }) => {
     });
 
     const dispatchSnap = (snapped: boolean) => {
+        const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+        if (isTouch) return;
         window.dispatchEvent(new CustomEvent('cursor-snap-change', {
             detail: { snapped, el: buttonRef.current }
         }));
@@ -1813,6 +1833,9 @@ const JiggleButton = ({ children, className = "", onClick, href, as = "button" }
     const hasEnteredRef = useRef(false);
 
     useEffect(() => {
+        const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+        if (isTouch) return;
+
         const lastMouse = { clientX: window.innerWidth / 2, clientY: window.innerHeight / 2 };
         const handleGlobalMove = (e: MouseEvent) => {
             lastMouse.clientX = e.clientX;
@@ -1907,6 +1930,9 @@ const MagneticLetter = ({ children, className = "" }: { children: string, classN
     const centerRef = useRef({ cx: 0, cy: 0 });
 
     useEffect(() => {
+        const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+        if (isTouch) return;
+
         // Cache center coordinates untuk mencegah Layout Thrashing yang bikin LAG
         const updateCenter = () => {
             if (!ref.current) return;
@@ -1957,6 +1983,8 @@ const TiltCard = ({ src, className = "" }: { src: string, className?: string }) 
     const [rotateY, setRotateY] = useState(0);
 
     const handleMouseMove = (e: React.MouseEvent) => {
+        const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+        if (isTouch) return;
         if (!ref.current) return;
         const rect = ref.current.getBoundingClientRect();
         const x = e.clientX - rect.left;
@@ -2035,7 +2063,7 @@ const ContactConsole = () => {
         }, 150);
 
         try {
-            const response = await fetch('http://localhost:8000/api/contact', {
+            const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:8000/api'}/contact`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -2070,14 +2098,14 @@ const ContactConsole = () => {
             <div className="absolute -bottom-24 -left-24 w-48 h-48 bg-purple-500/10 rounded-full blur-3xl pointer-events-none" />
 
             {/* Header Console */}
-            <div className="flex items-center justify-between border-b border-white/10 pb-4 mb-6 font-mono text-xs text-slate-400 select-none">
+            <div className="flex flex-col md:flex-row md:items-center justify-between border-b border-white/10 pb-4 mb-6 font-mono text-xs text-slate-400 select-none gap-2 md:gap-0">
                 <div className="flex items-center gap-2">
                     <span className="w-2.5 h-2.5 rounded-full bg-red-500/80" />
                     <span className="w-2.5 h-2.5 rounded-full bg-yellow-500/80" />
                     <span className="w-2.5 h-2.5 rounded-full bg-green-500/80" />
                     <span className="ml-2">SECURE_COMM_v1.0.9</span>
                 </div>
-                <div className="font-semibold text-blue-400 uppercase tracking-widest animate-pulse">
+                <div className="font-semibold text-blue-400 uppercase tracking-widest animate-pulse text-[10px] md:text-xs">
                     {status === 'idle' && "• STATUS: AWAITING SIGNAL"}
                     {status === 'typing' && "• STATUS: INPUT DETECTED..."}
                     {status === 'sending' && `• STATUS: TRANSMITTING [${progress}%]`}
@@ -2387,7 +2415,7 @@ export default function App() {
     const [showPacmanBtn, setShowPacmanBtn] = useState(false);
 
     useEffect(() => {
-        fetch('http://localhost:8000/api/skills')
+        fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:8000/api'}/skills`)
             .then(res => res.json())
             .then(data => {
                 if (typeof data === 'object' && !Array.isArray(data)) {
@@ -2500,7 +2528,7 @@ export default function App() {
                                     : { snapped: false }
                             }));
                         }}
-                        className="fixed bottom-8 right-8 z-[60] flex items-center w-[92px] h-[48px] rounded-full bg-white/90 backdrop-blur-md border border-slate-200/60 shadow-lg hover:shadow-xl transition-all duration-300 pointer-events-auto cursor-pointer select-none overflow-hidden"
+                        className="fixed bottom-8 right-8 z-[60] hidden md:flex items-center w-[92px] h-[48px] rounded-full bg-white/90 backdrop-blur-md border border-slate-200/60 shadow-lg hover:shadow-xl transition-all duration-300 pointer-events-auto cursor-pointer select-none overflow-hidden"
                     >
                         {/* Highlight Bulat Statis di Kiri (Slot Aktif) */}
                         <div className="absolute top-1 bottom-1 left-1 w-[40px] bg-blue-500 rounded-full shadow-sm z-0" />
@@ -2540,7 +2568,7 @@ export default function App() {
             <Navbar />
 
             {/* Logo Kiri Atas */}
-            <div className="fixed top-8 left-8 z-50 font-display font-bold text-2xl tracking-tight text-white mix-blend-difference pointer-events-auto cursor-pointer hover:text-[#0a84ff] transition-colors">
+            <div className="fixed top-8 left-8 z-50 font-display font-bold text-2xl tracking-tight text-white mix-blend-difference pointer-events-auto cursor-pointer hover:text-[#0a84ff] transition-colors hidden md:block">
                 Rasyid
             </div>
 
@@ -2552,8 +2580,8 @@ export default function App() {
                     <div className="w-full max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-12 mt-10">
 
                         {/* Kiri: Tipografi Interaktif */}
-                        <div className="flex-1 w-full text-left z-10 flex flex-col items-start">
-                            <h1 className="text-6xl md:text-[7rem] leading-[0.9] font-display font-black text-slate-900 tracking-tighter mb-6 flex flex-wrap">
+                        <div className="flex-1 w-full text-left z-10 flex flex-col items-start mt-12 md:mt-0">
+                            <h1 className="text-[3.5rem] md:text-[7rem] leading-[0.9] font-display font-black text-slate-900 tracking-tighter mb-6 flex flex-wrap">
                                 {"RPL".split("").map((char, i) => (
                                     <MagneticLetter key={`a-${i}`}>{char}</MagneticLetter>
                                 ))}
@@ -2579,7 +2607,7 @@ export default function App() {
                         {/* Kanan: 3D Tilt Card Interaktif */}
                         <div className="flex-1 w-full max-w-lg relative pointer-events-auto perspective-[2000px] z-10 hidden md:block">
                             <TiltCard
-                                src="assets/images/4bb36ba54963e76ec4277a5ea13aed3f.jpg"
+                                src='/images/4bb36ba54963e76ec4277a5ea13aed3f.jpg'
                                 className="w-full aspect-[4/5] shadow-[0_30px_60px_rgba(0,0,0,0.15)] rounded-3xl"
                             />
 
@@ -2618,11 +2646,11 @@ export default function App() {
                             <div className="grid grid-cols-1 md:grid-cols-3 grid-rows-2 gap-6 min-h-[500px]">
 
                                 {/* Kiri Besar (Main Intro) */}
-                                <BentoCard className="col-span-1 md:col-span-2 row-span-2 p-10 md:p-14 bg-white/40 backdrop-blur-md rounded-3xl flex flex-col justify-end shadow-sm border border-slate-200/50 cursor-default">
-                                    <h2 className="text-4xl md:text-[3.5rem] font-display font-black text-slate-900 leading-[1.1] mb-6 tracking-tight">
+                                <BentoCard className="col-span-1 md:col-span-2 row-span-2 p-6 md:p-14 bg-white/40 backdrop-blur-md rounded-3xl flex flex-col justify-end shadow-sm border border-slate-200/50 cursor-default">
+                                    <h2 className="text-3xl md:text-[3.5rem] font-display font-black text-slate-900 leading-[1.1] mb-6 tracking-tight">
                                         Halo, Rasyid <br /> Here.
                                     </h2>
-                                    <p className="text-slate-600 font-medium text-lg md:text-xl leading-relaxed max-w-lg">
+                                    <p className="text-slate-600 font-medium text-base md:text-xl leading-relaxed max-w-lg">
                                         Saya seorang pelajar SMK di SMK Negeri 1 Cianjur jurusan Rekayasa Perangkat Lunak (RPL). Saya suka membuat design UI/UX dengan menggunakan tools Figma/Adobe Illustrator untuk membuat design yang lebih menarik.
                                     </p>
                                 </BentoCard>

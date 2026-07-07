@@ -30,15 +30,16 @@
   }
 
   .snap-container {
-    height: 100vh;
+    height: 100dvh;
     overflow-y: scroll;
     scroll-snap-type: y mandatory;
     scroll-behavior: smooth;
     background: transparent;
+    -webkit-overflow-scrolling: touch;
   }
 
   .snap-page {
-    height: 100vh;
+    min-height: 100dvh;
     width: 100vw;
     scroll-snap-align: start;
     scroll-snap-stop: always;

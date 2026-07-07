@@ -42,4 +42,4 @@ Route::get('/{any}', function () {
     return file_exists(public_path('index.html'))
         ? response()->file(public_path('index.html'))
         : abort(404, 'Frontend belum di-build. Jalankan: npm run build di folder frontend.');
-})->where('any', '.*')->name('spa.fallback');
+})->where('any', '.*');

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import api from '../../services/api';
 import { Trash2, CheckCircle, Mail } from 'lucide-react';
 
@@ -42,14 +42,51 @@ const Messages = () => {
 
     return (
         <div>
-            <div className="flex justify-between items-center mb-8">
+            <div className="flex justify-between items-center mb-6">
                 <div>
-                    <h1 className="text-3xl font-bold text-slate-800 tracking-tight">Messages</h1>
-                    <p className="text-slate-500 mt-1">Pesan masuk dari pengunjung.</p>
+                    <h1 className="text-2xl md:text-3xl font-bold text-slate-800 tracking-tight">Messages</h1>
+                    <p className="text-slate-500 mt-1 text-sm">Pesan masuk dari pengunjung.</p>
                 </div>
             </div>
 
-            <div className="bg-white rounded-3xl border border-slate-100 shadow-[0_15px_30px_-10px_rgba(0,0,0,0.03)] overflow-hidden">
+            {/* Mobile Card View */}
+            <div className="md:hidden space-y-3">
+                {isLoading ? (
+                    <div className="p-8 text-center text-slate-500 bg-white rounded-2xl">Loading...</div>
+                ) : messages.length === 0 ? (
+                    <div className="p-8 text-center text-slate-500 bg-white rounded-2xl">Belum ada pesan.</div>
+                ) : (
+                    messages.map((m: any) => (
+                        <div key={m.id} className={`bg-white rounded-2xl border border-slate-100 shadow-sm p-4 ${!m.is_read ? 'border-blue-200 bg-blue-50/30' : ''}`}>
+                            <div className="flex items-start justify-between gap-2 mb-2">
+                                <div>
+                                    <div className="font-bold text-slate-800 text-sm">{m.name}</div>
+                                    <div className="text-xs text-slate-500">{m.email}</div>
+                                </div>
+                                {m.is_read ? (
+                                    <span className="inline-block bg-slate-100 text-slate-500 text-xs font-semibold px-2 py-0.5 rounded-md flex-shrink-0">Dibaca</span>
+                                ) : (
+                                    <span className="inline-block bg-blue-100 text-blue-600 text-xs font-semibold px-2 py-0.5 rounded-md border border-blue-200 flex-shrink-0">Baru</span>
+                                )}
+                            </div>
+                            <p className="text-sm text-slate-600 mb-3">{m.message}</p>
+                            <div className="flex items-center gap-2">
+                                {!m.is_read && (
+                                    <button onClick={() => handleRead(m.id)} className="text-xs font-medium px-3 py-1.5 rounded-lg bg-slate-100 text-slate-600 hover:bg-green-100 hover:text-green-600 transition-colors flex items-center gap-1">
+                                        <CheckCircle size={12} /> Tandai Dibaca
+                                    </button>
+                                )}
+                                <button onClick={() => handleDelete(m.id)} className="text-xs font-medium px-3 py-1.5 rounded-lg bg-slate-100 text-slate-600 hover:bg-red-100 hover:text-red-600 transition-colors flex items-center gap-1">
+                                    <Trash2 size={12} /> Hapus
+                                </button>
+                            </div>
+                        </div>
+                    ))
+                )}
+            </div>
+
+            {/* Desktop Table View */}
+            <div className="hidden md:block bg-white rounded-3xl border border-slate-100 shadow-[0_15px_30px_-10px_rgba(0,0,0,0.03)] overflow-hidden">
                 <table className="w-full text-left border-collapse">
                     <thead>
                         <tr className="bg-slate-50/50 border-b border-slate-100">
