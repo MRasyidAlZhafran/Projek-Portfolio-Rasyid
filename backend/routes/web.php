@@ -6,7 +6,6 @@ use App\Http\Controllers\PortfolioController;
 use Illuminate\Support\Facades\Route;
 
 // Frontend Routes
-Route::get('/', [PortfolioController::class, 'index'])->name('portfolio.home');
 Route::post('/contact', [PortfolioController::class, 'storeContact'])->name('portfolio.contact');
 
 // Auth Routes

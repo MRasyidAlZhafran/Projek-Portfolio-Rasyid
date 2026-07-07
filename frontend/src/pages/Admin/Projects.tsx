@@ -2,7 +2,9 @@ import { useEffect, useState } from 'react';
 import api from '../../services/api';
 import { Plus, Edit2, Trash2, Link as LinkIcon, X } from 'lucide-react';
 
-const emptyForm = { title: '', description: '', tech_stack: '', github_url: '', demo_url: '', image: null as File | null };
+const CATEGORIES = ['Web App', 'Mobile App', 'UI/UX Design', 'API', 'Desktop', 'Game', 'AI/ML', 'Lainnya'];
+
+const emptyForm = { title: '', description: '', tech_stack: '', category: '', github_url: '', demo_url: '', image: null as File | null };
 
 const Projects = () => {
     const [projects, setProjects] = useState([]);
@@ -11,6 +13,7 @@ const Projects = () => {
     const [editingProject, setEditingProject] = useState<any>(null);
     const [form, setForm] = useState(emptyForm);
     const [isSaving, setIsSaving] = useState(false);
+    const [isCategoryOpen, setIsCategoryOpen] = useState(false);
 
     const fetchProjects = async () => {
         try {
@@ -33,7 +36,7 @@ const Projects = () => {
 
     const openEdit = (p: any) => {
         setEditingProject(p);
-        setForm({ title: p.title, description: p.description, tech_stack: p.tech_stack, github_url: p.github_url || '', demo_url: p.demo_url || '', image: null });
+        setForm({ title: p.title, description: p.description, tech_stack: p.tech_stack, category: p.category || '', github_url: p.github_url || '', demo_url: p.demo_url || '', image: null });
         setIsModalOpen(true);
     };
 
@@ -41,6 +44,7 @@ const Projects = () => {
         setIsModalOpen(false);
         setEditingProject(null);
         setForm(emptyForm);
+        setIsCategoryOpen(false);
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -51,6 +55,7 @@ const Projects = () => {
             data.append('title', form.title);
             data.append('description', form.description);
             data.append('tech_stack', form.tech_stack);
+            data.append('category', form.category);
             data.append('github_url', form.github_url);
             data.append('demo_url', form.demo_url);
             if (form.image) data.append('image', form.image);
@@ -232,6 +237,46 @@ const Projects = () => {
                                     placeholder="cth. React, Laravel, Tailwind CSS"
                                     className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition"
                                 />
+                            </div>
+                            <div className="relative">
+                                <label className="block text-sm font-medium text-slate-700 mb-1.5">Kategori</label>
+                                <div className="relative">
+                                    <input
+                                        type="text"
+                                        value={form.category}
+                                        onChange={e => setForm({ ...form, category: e.target.value })}
+                                        onFocus={() => setIsCategoryOpen(true)}
+                                        placeholder="Cari atau pilih kategori..."
+                                        className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition"
+                                    />
+                                    <svg className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
+                                </div>
+                                {isCategoryOpen && (
+                                    <>
+                                        <div className="fixed inset-0 z-40" onClick={() => setIsCategoryOpen(false)} />
+                                        <div className="absolute z-50 mt-1 w-full bg-white border border-slate-200 rounded-xl shadow-lg max-h-40 overflow-y-auto">
+                                            {CATEGORIES.filter(c => c.toLowerCase().includes(form.category.toLowerCase())).map(cat => (
+                                                <button
+                                                    key={cat}
+                                                    type="button"
+                                                    onClick={() => { setForm({ ...form, category: cat }); setIsCategoryOpen(false); }}
+                                                    className={`w-full text-left px-4 py-2.5 text-sm hover:bg-blue-50 transition ${form.category === cat ? 'bg-blue-50 text-blue-600 font-medium' : 'text-slate-700'}`}
+                                                >
+                                                    {cat}
+                                                </button>
+                                            ))}
+                                            {form.category && !CATEGORIES.some(c => c.toLowerCase() === form.category.toLowerCase()) && (
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setIsCategoryOpen(false)}
+                                                    className="w-full text-left px-4 py-2.5 text-sm text-blue-600 font-medium hover:bg-blue-50 transition border-t border-slate-100"
+                                                >
+                                                    + Tambah "{form.category}"
+                                                </button>
+                                            )}
+                                        </div>
+                                    </>
+                                )}
                             </div>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
