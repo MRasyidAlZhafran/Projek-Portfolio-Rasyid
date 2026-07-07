@@ -1046,7 +1046,7 @@ const KaryaNodes = () => {
                         initial={{ opacity: 1 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 1, transition: { duration: 0.6 } }}
-                        className="fixed inset-0 z-[100] flex flex-col items-center justify-center overflow-hidden"
+                        className="fixed inset-0 z-[200] flex flex-col items-center justify-center overflow-hidden"
                     >
                         {/* Latar Belakang Gelap Dasar */}
                         <motion.div
