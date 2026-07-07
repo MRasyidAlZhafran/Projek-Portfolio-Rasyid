@@ -1082,14 +1082,16 @@ const KaryaNodes = () => {
                             transition={{ duration: 0.3, delay: 0.5 }}
                             className="relative z-10 flex flex-col items-center justify-center p-8 text-center mt-20 pointer-events-auto w-full"
                         >
-                            <motion.span
-                                initial={{ y: 20, opacity: 0 }}
-                                animate={{ y: 0, opacity: 1 }}
-                                transition={{ delay: 0.7, duration: 0.6 }}
-                                className="text-blue-600 font-mono tracking-[0.5em] uppercase text-xs md:text-sm mb-6 border border-blue-200 px-6 py-2 rounded-full backdrop-blur-md bg-white/50"
-                            >
-                                {selectedProject.category}
-                            </motion.span>
+                            {selectedProject.category && (
+                                <motion.span
+                                    initial={{ y: 20, opacity: 0 }}
+                                    animate={{ y: 0, opacity: 1 }}
+                                    transition={{ delay: 0.7, duration: 0.6 }}
+                                    className="text-blue-600 font-mono tracking-[0.5em] uppercase text-xs md:text-sm mb-6 border border-blue-200 px-6 py-2 rounded-full backdrop-blur-md bg-white/50"
+                                >
+                                    {selectedProject.category}
+                                </motion.span>
+                            )}
 
                             <motion.h2
                                 initial={{ y: 30, opacity: 0 }}
